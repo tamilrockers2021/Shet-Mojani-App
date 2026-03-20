@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Jamin Mojani</string>
+    <string name="title_activity_main">Jamin Mojani</string>
+    <string name="package_name">com.krushi.mojani</string>
+    <string name="custom_url_scheme">com.krushi.mojani</string>
+</resources>

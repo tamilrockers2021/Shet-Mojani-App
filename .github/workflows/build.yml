@@ -23,8 +23,13 @@ jobs:
         distribution: 'temurin'
         cache: gradle
 
+    # ही स्टेप महत्त्वाची आहे: यामुळे गायब असलेल्या फाईल्स (Cordova Plugins) पुन्हा तयार होतील
+    - name: Install Dependencies and Sync Capacitor
+      run: |
+        npm install
+        npx cap sync android
+
     - name: Grant execute permission for gradlew
-        # ही स्टेप खूप महत्त्वाची आहे, परमिशन नसल्यास exit code 1 येतो
       run: chmod +x ./android/gradlew
 
     - name: Build APK with Gradle

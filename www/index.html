@@ -622,28 +622,7 @@
             const text = "🚜 घरबसल्या स्वतःच्या मोबाईलवर शेतीची अचूक मोजणी करा. कृषियोजनाचे हे मोफत ॲप वापरून पहा!";
             window.location.href = `https://wa.me/?text=${encodeURIComponent(text)}`;
         }
-  window.addEventListener('load', async () => {
-            try {
-                if (window.Capacitor && window.Capacitor.Plugins.AdMob) {
-                    const AdMob = window.Capacitor.Plugins.AdMob;
-                    
-                    // AdMob चालू करणे (खऱ्या जाहिरातींसाठी false केले)
-                    await AdMob.initialize({
-                        initializeForTesting: false 
-                    });
 
-                    // Banner Ad दाखवणे
-                    await AdMob.showBanner({
-                        adId: 'ca-app-pub-8727011553019372/7290892806', 
-                        adSize: 'BANNER',
-                        position: 'BOTTOM_CENTER',
-                        margin: 70, 
-                        isTesting: false // हे false करणे खूप महत्त्वाचे आहे
-                    });
-                }
-            } catch (error) {
-                console.log("AdMob Error:", error);
-            }
         });
     </script>
 </body>

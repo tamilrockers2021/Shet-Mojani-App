@@ -4,7 +4,6 @@ on:
   push:
     branches: [ "main", "master" ]
 
-# २०२६ च्या नियमांनुसार Node 24 फोर्स करण्यासाठी
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
@@ -16,14 +15,13 @@ jobs:
     - name: Checkout Code
       uses: actions/checkout@v4
 
-    - name: Set up Java 17
+    - name: Set up Java 21  # आपण व्हर्जन 17 वरून 21 केले आहे
       uses: actions/setup-java@v4
       with:
-        java-version: '17'
+        java-version: '21'
         distribution: 'temurin'
         cache: gradle
 
-    # ही स्टेप महत्त्वाची आहे: यामुळे गायब असलेल्या फाईल्स (Cordova Plugins) पुन्हा तयार होतील
     - name: Install Dependencies and Sync Capacitor
       run: |
         npm install

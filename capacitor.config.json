@@ -1,5 +1,11 @@
 {
-  "appId": "com.krushi.mojani",
-  "appName": "Jamin Mojani",
-  "webDir": "www"
+  "appId": "com.krushiyojana.mojani",
+  "appName": "Shet Mojani",
+  "webDir": "www",
+  "bundledWebRuntime": false,
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 0
+    }
+  }
 }

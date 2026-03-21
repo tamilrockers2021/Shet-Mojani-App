@@ -10,7 +10,7 @@
 
   "server": {
 
-    "url": "https://krushiyojana.in/mojani/v1/",
+    "url": "https://krushiyojana.in/app/mojani/v1/",
 
     "cleartext": true
 

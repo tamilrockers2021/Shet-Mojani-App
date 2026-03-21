@@ -8,7 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
-            darkMode: 'class', // Manual toggle Support
+            darkMode: 'class', 
             theme: {
                 extend: {
                     colors: { emerald: { 400: '#34d399', 500: '#10b981', 600: '#059669', 700: '#047857' } },
@@ -30,13 +30,12 @@
         body { background-color: #f8fafc; color: #0f172a; transition: background-color 0.3s; }
         html.dark body { background-color: #0f172a; color: #f1f5f9; }
 
-        /* Safe Area Configuration for Status Bar */
         :root {
             --sat: env(safe-area-inset-top, 24px); 
             --sab: env(safe-area-inset-bottom, 0px);
         }
 
-        .app-screen { position: absolute; top: 0; left: 0; right: 0; bottom: 70px; overflow-y: auto; opacity: 0; pointer-events: none; transition: opacity 0.4s ease-in-out; }
+        .app-screen { position: absolute; top: 0; left: 0; right: 0; bottom: 70px; overflow-y: auto; overflow-x: hidden; opacity: 0; pointer-events: none; transition: opacity 0.4s ease-in-out; }
         .app-screen.active { opacity: 1; pointer-events: auto; z-index: 50; }
         #mapScreen { overflow: hidden; }
 
@@ -76,36 +75,44 @@
 
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-
-        .safe-pt { padding-top: calc(var(--sat) + 2rem); }
         
-        /* 🔥 High Quality HD Download Container */
+        /* HD Download Container */
         #fullDownloadContainer {
             width: 800px; height: 1100px; background: white; display: flex; flex-direction: column;
             font-family: 'Poppins', sans-serif; overflow: hidden;
             position: fixed; top: 0; left: -9999px; z-index: -100;
         }
+
+        /* Splash Screen Enhanced Animations */
+        @keyframes pulse-bg {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .splash-gradient {
+            background-size: 200% 200%;
+            animation: pulse-bg 3s ease infinite;
+        }
     </style>
 </head>
 <body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100">
 
-    <div id="splashScreen" class="fixed inset-0 z-[100000] bg-gradient-to-br from-emerald-500 to-teal-700 flex flex-col items-center justify-center transition-opacity duration-700">
-        <div class="w-32 h-32 bg-white rounded-full flex items-center justify-center shadow-[0_10px_30px_rgba(0,0,0,0.2)] mb-6 relative">
-            <div class="absolute inset-0 bg-white rounded-full animate-ping opacity-20"></div>
-            <i class="fas fa-map-marked-alt text-6xl text-emerald-600"></i>
+    <div id="splashScreen" class="fixed inset-0 z-[100000] bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-800 splash-gradient flex flex-col items-center justify-center transition-all duration-1000 transform">
+        <div class="w-36 h-36 bg-white rounded-full flex items-center justify-center shadow-[0_10px_40px_rgba(0,0,0,0.3)] mb-8 relative animate-bounce">
+            <div class="absolute inset-0 bg-white rounded-full animate-ping opacity-30"></div>
+            <i class="fas fa-map-marked-alt text-7xl text-emerald-600"></i>
         </div>
-        <h1 class="text-white text-5xl font-black tracking-wide drop-shadow-md">शेत मोजणी</h1>
-        <p class="text-emerald-100 mt-3 font-bold tracking-widest uppercase text-xs bg-white/20 px-4 py-1.5 rounded-full border border-emerald-400/50 inline-flex items-center gap-2">
+        <h1 class="text-white text-5xl font-black tracking-wide drop-shadow-lg mb-2">शेत मोजणी</h1>
+        <p class="text-emerald-100 mt-2 font-bold tracking-widest uppercase text-xs bg-white/20 px-5 py-2 rounded-full border border-emerald-400/50 inline-flex items-center gap-2 shadow-sm">
             <span class="opacity-80 lowercase font-medium">Powered by</span> Krushiyojana.in
         </p>
-        
-        <div class="absolute bottom-10 flex flex-col items-center">
-            <i class="fas fa-spinner fa-spin text-white text-2xl mb-2 opacity-80"></i>
-            <p class="text-emerald-100 text-xs font-medium">Made for Farmers</p>
+        <div class="absolute bottom-12 flex flex-col items-center">
+            <i class="fas fa-circle-notch fa-spin text-white text-3xl mb-3 opacity-90"></i>
+            <p class="text-emerald-100 text-xs font-medium tracking-wider">Made for Farmers</p>
         </div>
     </div>
 
-    <button onclick="toggleTheme()" class="fixed top-[calc(env(safe-area-inset-top,24px)+15px)] right-4 z-[9999] bg-white dark:bg-slate-800 text-slate-800 dark:text-white w-10 h-10 rounded-full shadow-lg flex items-center justify-center text-lg border border-slate-200 dark:border-slate-700 active:scale-90 transition-transform">
+    <button id="themeToggleBtn" onclick="toggleTheme()" class="fixed top-[calc(env(safe-area-inset-top,24px)+15px)] right-4 z-[999] bg-white dark:bg-slate-800 text-slate-800 dark:text-white w-10 h-10 rounded-full shadow-lg flex items-center justify-center text-lg border border-slate-200 dark:border-slate-700 active:scale-90 transition-transform">
         <i id="themeIcon" class="fas fa-moon"></i>
     </button>
 
@@ -116,7 +123,6 @@
 
         <div class="flex-1 flex overflow-hidden relative mt-[-20px]">
             <div id="sliderTrack" class="flex w-full h-full transition-transform duration-500 ease-out">
-                
                 <div onclick="nextSlide()" class="onboarding-slide flex flex-col items-center justify-center p-8 text-center relative">
                     <div class="absolute top-10 right-10 text-slate-300 dark:text-slate-600 text-xs font-bold animate-pulse"><i class="fas fa-hand-pointer mr-1"></i> टच करा</div>
                     <div class="w-56 h-56 bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/50 dark:to-emerald-800/30 rounded-[3rem] flex items-center justify-center mb-10 shadow-inner animate-fade-in-up transform rotate-3">
@@ -125,7 +131,6 @@
                     <h2 class="text-3xl font-black text-slate-800 dark:text-white mb-4 animate-fade-in-up">सॅटेलाइट GPS मोजणी</h2>
                     <p class="text-slate-500 dark:text-slate-400 text-lg font-medium leading-relaxed animate-fade-in-up">आता घरबसल्या किंवा बांधावर जाऊन मोबाईलच्या GPS ने तुमची शेती एकदम अचूक आणि मोफत मोजा.</p>
                 </div>
-
                 <div onclick="nextSlide()" class="onboarding-slide flex flex-col items-center justify-center p-8 text-center">
                     <div class="w-56 h-56 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/50 dark:to-blue-800/30 rounded-[3rem] flex items-center justify-center mb-10 shadow-inner transform -rotate-3">
                         <i class="fas fa-walking text-8xl text-blue-500 dark:text-blue-400 rotate-3 drop-shadow-lg"></i>
@@ -133,7 +138,6 @@
                     <h2 class="text-3xl font-black text-slate-800 dark:text-white mb-4">बांधावरून चाला</h2>
                     <p class="text-slate-500 dark:text-slate-400 text-lg font-medium leading-relaxed">फक्त 'मोजणी सुरू करा' बटण दाबा आणि तुमच्या शेताच्या बांधावरून पूर्ण एक फेरी मारा.</p>
                 </div>
-
                 <div onclick="nextSlide()" class="onboarding-slide flex flex-col items-center justify-center p-8 text-center">
                     <div class="w-56 h-56 bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/50 dark:to-orange-800/30 rounded-[3rem] flex items-center justify-center mb-10 shadow-inner transform rotate-3">
                         <i class="fas fa-crosshairs text-8xl text-orange-500 dark:text-orange-400 -rotate-3 drop-shadow-lg"></i>
@@ -141,7 +145,6 @@
                     <h2 class="text-3xl font-black text-slate-800 dark:text-white mb-4">कोपरा फिक्स करा</h2>
                     <p class="text-slate-500 dark:text-slate-400 text-lg font-medium leading-relaxed">अचूकतेसाठी, शेताच्या कोपऱ्यावर (टर्निंग पॉईंटवर) आल्यावर 'कोपरा फिक्स करा' हे बटण दाबायला विसरू नका.</p>
                 </div>
-
                 <div onclick="nextSlide()" class="onboarding-slide flex flex-col items-center justify-center p-8 text-center">
                     <div class="w-56 h-56 bg-gradient-to-br from-teal-50 to-teal-100 dark:from-teal-900/50 dark:to-teal-800/30 rounded-[3rem] flex items-center justify-center mb-10 shadow-inner transform rotate-3">
                         <i class="fas fa-file-invoice text-8xl text-teal-500 dark:text-teal-400 -rotate-3 drop-shadow-lg"></i>
@@ -149,7 +152,6 @@
                     <h2 class="text-3xl font-black text-slate-800 dark:text-white mb-4">निकाल आणि शेअर</h2>
                     <p class="text-slate-500 dark:text-slate-400 text-lg font-medium leading-relaxed">मोजणी पूर्ण झाल्यावर एकूण गुंठे, एकर आणि हेक्टरमध्ये अचूक निकाल मिळवा आणि तो WhatsApp वर शेअर करा.</p>
                 </div>
-
             </div>
         </div>
 
@@ -165,11 +167,11 @@
 
     <div id="fullDownloadContainer">
         <div class="bg-gradient-to-r from-emerald-600 to-teal-700 p-8 text-center text-white border-b-8 border-emerald-500">
-            <h1 class="text-5xl font-black mb-2 tracking-wide">कृषियोजना मोजणी</h1>
-            <p class="text-emerald-100 text-xl font-bold tracking-widest uppercase">शेत जमीन मोजणी अधिकृत अहवाल</p>
+            <h1 class="text-5xl font-black mb-2 tracking-wide">कृषियोजना</h1>
+            <br>
+            <p class="text-emerald-100 text-xl font-bold tracking-widest uppercase">शेतकर्‍यांच्या हक्काचा प्लॅटफॉर्म</p>
         </div>
-        
-        <div class="flex justify-between items-center p-8 bg-slate-50">
+        <div class="flex justify-between items-center p-8 bg-slate-50 border-b-4 border-slate-200">
             <div>
                 <p class="text-slate-400 text-sm font-bold uppercase tracking-widest mb-1">शेतकऱ्याची माहिती</p>
                 <h2 class="text-3xl font-black text-slate-800 mb-1" id="dlName">नाव: -</h2>
@@ -180,9 +182,8 @@
                 <p class="text-6xl font-black text-emerald-600"><span id="dlArea">0.00</span> <span class="text-3xl text-emerald-700">गुंठे</span></p>
             </div>
         </div>
-
-        <div id="downloadMapArea" class="flex-1 relative w-full border-y-[6px] border-slate-200 bg-slate-100"></div>
-
+        <div id="downloadMapArea" class="flex-1 relative w-full border-y-[6px] border-slate-200 bg-[#e5e7eb]"></div>
+        
         <div class="p-8 bg-slate-800 flex justify-between items-center text-white">
             <div>
                 <p class="text-slate-400 text-sm font-bold uppercase mb-1">दिनांक व वेळ</p>
@@ -217,9 +218,9 @@
         </div>
 
         <div class="map-bottom-controls">
-            <div class="flex justify-center gap-2 w-full bg-white/95 dark:bg-slate-800/95 backdrop-blur-md p-1.5 rounded-[1.25rem] shadow-lg border border-slate-100 dark:border-slate-700">
-                <button id="modeGpsBtn" onclick="setMode('gps')" class="flex-1 bg-emerald-600 text-white py-3 rounded-xl font-bold text-sm shadow-sm transition-all"><i class="fas fa-walking mr-1"></i> चालत मोजा</button>
-                <button id="modeManualBtn" onclick="setMode('manual')" class="flex-1 bg-transparent text-slate-500 dark:text-slate-400 py-3 rounded-xl font-bold text-sm transition-all"><i class="fas fa-hand-pointer mr-1"></i> नकाशावर मोजा</button>
+            <div class="flex justify-center gap-2 w-full bg-white/95 dark:bg-slate-800/95 backdrop-blur-md p-1.5 rounded-[1.25rem] shadow-lg border border-slate-100 dark:border-slate-700 mb-3">
+                <button id="modeGpsBtn" onclick="setMode('gps')" class="flex-1 bg-emerald-600 text-white py-3.5 rounded-xl font-bold text-sm shadow-sm transition-all"><i class="fas fa-walking mr-1"></i> चालत मोजा</button>
+                <button id="modeManualBtn" onclick="setMode('manual')" class="flex-1 bg-transparent text-slate-500 dark:text-slate-400 py-3.5 rounded-xl font-bold text-sm transition-all"><i class="fas fa-hand-pointer mr-1"></i> नकाशावर मोजा</button>
             </div>
 
             <div id="gpsControlsDiv" class="flex flex-col gap-2 w-full">
@@ -235,86 +236,78 @@
             </div>
 
             <div id="manualControls" class="hidden flex gap-2 w-full">
-                <button onclick="undoManualPin()" class="w-[30%] bg-orange-500 text-white font-bold py-3 rounded-[1.25rem] shadow-lg active:scale-95 transition-transform text-xs flex flex-col items-center justify-center"><i class="fas fa-undo mb-1"></i> मागे घ्या</button>
-                <button onclick="calculateManualArea()" class="w-[70%] bg-emerald-600 text-white font-black py-3 rounded-[1.25rem] shadow-lg active:scale-95 transition-transform text-base flex items-center justify-center gap-2"><i class="fas fa-calculator"></i> क्षेत्रफळ काढा</button>
+                <button id="undoBtn" onclick="undoManualPin()" class="hidden w-[30%] bg-orange-500 text-white font-bold py-3 rounded-[1.25rem] shadow-lg active:scale-95 transition-transform text-xs flex-col items-center justify-center"><i class="fas fa-undo mb-1"></i> मागे घ्या</button>
+                <button id="calcBtn" onclick="calculateManualArea()" class="w-full bg-emerald-600 text-white font-black py-3 rounded-[1.25rem] shadow-lg active:scale-95 transition-transform text-base flex items-center justify-center gap-2"><i class="fas fa-calculator"></i> क्षेत्रफळ काढा</button>
             </div>
         </div>
     </div>
 
     <div id="infoScreen" class="app-screen bg-slate-50 dark:bg-slate-900 pb-32">
-        <div class="bg-gradient-to-r from-emerald-600 to-teal-700 px-6 pb-12 safe-pt text-white shadow-lg relative overflow-hidden rounded-b-[2rem]">
+        <div class="w-full bg-gradient-to-b from-emerald-500 to-emerald-700 dark:from-emerald-700 dark:to-emerald-900 pt-[calc(env(safe-area-inset-top,24px)+2rem)] pb-24 px-6 text-center text-white rounded-b-[2.5rem] shadow-lg relative overflow-hidden">
             <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
-            <i class="fas fa-map-marked-alt absolute -right-6 -bottom-6 text-9xl opacity-10 transform -rotate-12"></i>
-            <h2 class="text-3xl font-black mb-2 relative z-10 drop-shadow-md">वापरण्याची सोपी पद्धत</h2>
-            <p class="text-emerald-100 text-sm font-medium relative z-10 leading-relaxed">नमस्कार शेतकरी मित्रांनो! तुमची शेती अचूक मोजण्यासाठी खालील स्टेप्स काळजीपूर्वक वाचा. यामुळे तुमची मोजणी १००% अचूक येईल.</p>
+            <h2 class="text-3xl font-black mb-2 relative z-10 drop-shadow-md">मोजणी कशी करावी?</h2>
+            <p class="text-emerald-50 text-sm font-medium relative z-10">तुमची शेती अचूक मोजण्यासाठी खालील स्टेप्स काळजीपूर्वक वाचा.</p>
         </div>
         
-        <div class="px-5 py-8 flex flex-col gap-6">
-            <div class="bg-white dark:bg-slate-800 rounded-[1.5rem] p-6 shadow-[0_4px_20px_rgba(0,0,0,0.04)] border border-slate-100 dark:border-slate-700 flex gap-5 relative overflow-hidden">
-                <div class="w-1.5 absolute left-0 top-0 bottom-0 bg-emerald-500"></div>
-                <div class="w-14 h-14 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center font-black text-2xl shrink-0 border border-emerald-100 dark:border-emerald-800"><i class="fas fa-location-arrow"></i></div>
-                <div>
-                    <h3 class="font-black text-lg text-slate-800 dark:text-white mb-2">१. GPS आणि सिग्नल</h3>
-                    <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed text-justify">सर्वात आधी तुमच्या मोबाईलचे लोकेशन (GPS) चालू करा. ज्या शेताची मोजणी करायची आहे त्याच्या एका बांधावर जाऊन उभे राहा. स्क्रीनवर <b>'मोजणी सुरू करा'</b> हे हिरवे बटण येईपर्यंत २-३ मिनिटे वाट पहा. (तुमच्या फोनचा सिग्नल १० मीटरच्या आत येणे आवश्यक आहे).</p>
+        <div class="px-5 -mt-12 relative z-20 flex flex-col gap-5 w-full">
+            <div class="bg-white dark:bg-slate-800 rounded-[1.5rem] p-6 shadow-md border border-slate-100 dark:border-slate-700 w-full">
+                <div class="flex items-center gap-4 mb-3">
+                    <div class="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center font-black text-xl shrink-0"><i class="fas fa-location-arrow"></i></div>
+                    <h3 class="font-black text-lg text-slate-800 dark:text-white">१. GPS आणि सिग्नल</h3>
                 </div>
+                <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed text-justify">सर्वात आधी तुमच्या मोबाईलचे लोकेशन (GPS) चालू करा. ज्या शेताची मोजणी करायची आहे त्याच्या एका बांधावर जाऊन उभे राहा. स्क्रीनवर <b>'मोजणी सुरू करा'</b> हे हिरवे बटण येईपर्यंत २-३ मिनिटे वाट पहा. (तुमच्या फोनचा सिग्नल १० मीटरच्या आत येणे आवश्यक आहे).</p>
             </div>
 
-            <div class="bg-white dark:bg-slate-800 rounded-[1.5rem] p-6 shadow-[0_4px_20px_rgba(0,0,0,0.04)] border border-slate-100 dark:border-slate-700 flex gap-5 relative overflow-hidden">
-                <div class="w-1.5 absolute left-0 top-0 bottom-0 bg-blue-500"></div>
-                <div class="w-14 h-14 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center font-black text-2xl shrink-0 border border-blue-100 dark:border-blue-800"><i class="fas fa-walking"></i></div>
-                <div>
-                    <h3 class="font-black text-lg text-slate-800 dark:text-white mb-2">२. चालायला सुरुवात</h3>
-                    <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed text-justify">हिरवे बटण दाबल्यानंतर तुमच्या शेताच्या बांधावरून (कडेकडेने) सावकाश चालायला सुरुवात करा. चालताना मोबाईल हातात स्थिर ठेवा. तुम्ही जसे चालाल, तशी नकाशावर लाल रेषा तयार होताना दिसेल.</p>
+            <div class="bg-white dark:bg-slate-800 rounded-[1.5rem] p-6 shadow-md border border-slate-100 dark:border-slate-700 w-full">
+                <div class="flex items-center gap-4 mb-3">
+                    <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center font-black text-xl shrink-0"><i class="fas fa-walking"></i></div>
+                    <h3 class="font-black text-lg text-slate-800 dark:text-white">२. चालायला सुरुवात</h3>
                 </div>
+                <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed text-justify">हिरवे बटण दाबल्यानंतर तुमच्या शेताच्या बांधावरून (कडेकडेने) सावकाश चालायला सुरुवात करा. चालताना मोबाईल हातात स्थिर ठेवा. तुम्ही जसे चालाल, तशी नकाशावर लाल रेषा तयार होताना दिसेल.</p>
             </div>
 
-            <div class="bg-white dark:bg-slate-800 rounded-[1.5rem] p-6 shadow-[0_4px_20px_rgba(0,0,0,0.04)] border border-slate-100 dark:border-slate-700 flex gap-5 relative overflow-hidden">
-                <div class="w-1.5 absolute left-0 top-0 bottom-0 bg-orange-500"></div>
-                <div class="w-14 h-14 bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 rounded-full flex items-center justify-center font-black text-2xl shrink-0 border border-orange-100 dark:border-orange-800"><i class="fas fa-crosshairs"></i></div>
-                <div>
-                    <h3 class="font-black text-lg text-slate-800 dark:text-white mb-2">३. कोपरा फिक्स करा</h3>
-                    <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed text-justify">मोजणीची अचूकता वाढवण्यासाठी, चालताना शेताचा टर्निंग पॉईंट (कोपरा) आल्यावर तिथे ५ सेकंद नक्की थांबा आणि <b class="text-orange-500">कोपरा फिक्स करा</b> हे केशरी बटण दाबा. यामुळे सॅटेलाइट तुमचा कोपरा अगदी अचूक पकडेल.</p>
+            <div class="bg-white dark:bg-slate-800 rounded-[1.5rem] p-6 shadow-md border border-slate-100 dark:border-slate-700 w-full">
+                <div class="flex items-center gap-4 mb-3">
+                    <div class="w-12 h-12 bg-orange-100 dark:bg-orange-900/50 text-orange-600 dark:text-orange-400 rounded-full flex items-center justify-center font-black text-xl shrink-0"><i class="fas fa-crosshairs"></i></div>
+                    <h3 class="font-black text-lg text-slate-800 dark:text-white">३. कोपरा फिक्स करा</h3>
                 </div>
+                <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed text-justify">मोजणीची अचूकता वाढवण्यासाठी, चालताना शेताचा टर्निंग पॉईंट (कोपरा) आल्यावर तिथे ५ सेकंद नक्की थांबा आणि <b class="text-orange-500">कोपरा फिक्स करा</b> हे केशरी बटण दाबा. यामुळे सॅटेलाइट तुमचा कोपरा अगदी अचूक पकडेल.</p>
             </div>
 
-            <div class="bg-white dark:bg-slate-800 rounded-[1.5rem] p-6 shadow-[0_4px_20px_rgba(0,0,0,0.04)] border border-slate-100 dark:border-slate-700 flex gap-5 relative overflow-hidden">
-                <div class="w-1.5 absolute left-0 top-0 bottom-0 bg-red-500"></div>
-                <div class="w-14 h-14 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-full flex items-center justify-center font-black text-2xl shrink-0 border border-red-100 dark:border-red-800"><i class="fas fa-flag-checkered"></i></div>
-                <div>
-                    <h3 class="font-black text-lg text-slate-800 dark:text-white mb-2">४. मोजणी पूर्ण</h3>
-                    <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed text-justify">शेताची पूर्ण फेरी मारून जिथून मोजणीला सुरुवात केली होती, बरोबर तिथेच आल्यावर <b class="text-red-500">मोजणी पूर्ण</b> हे लाल बटण दाबा. सिस्टीम कॅल्क्युलेट करून तुम्हाला लगेच तुमचा निकाल देईल.</p>
+            <div class="bg-white dark:bg-slate-800 rounded-[1.5rem] p-6 shadow-md border border-slate-100 dark:border-slate-700 w-full">
+                <div class="flex items-center gap-4 mb-3">
+                    <div class="w-12 h-12 bg-red-100 dark:bg-red-900/50 text-red-600 dark:text-red-400 rounded-full flex items-center justify-center font-black text-xl shrink-0"><i class="fas fa-flag-checkered"></i></div>
+                    <h3 class="font-black text-lg text-slate-800 dark:text-white">४. मोजणी पूर्ण</h3>
                 </div>
+                <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed text-justify">शेताची पूर्ण फेरी मारून जिथून मोजणीला सुरुवात केली होती, बरोबर तिथेच आल्यावर <b class="text-red-500">मोजणी पूर्ण</b> हे लाल बटण दाबा. सिस्टीम कॅल्क्युलेट करून तुम्हाला लगेच तुमचा निकाल देईल.</p>
             </div>
 
-            <div class="bg-indigo-50 dark:bg-indigo-900/20 p-6 rounded-[1.5rem] border border-indigo-100 dark:border-indigo-800 mt-2 text-center shadow-inner">
-                <div class="w-16 h-16 bg-white dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4 shadow-md text-indigo-500 dark:text-indigo-400 text-2xl"><i class="fas fa-lightbulb"></i></div>
-                <h3 class="font-black text-indigo-900 dark:text-indigo-300 text-lg mb-3">अचूकतेसाठी खास टिप्स</h3>
-                <ul class="text-sm text-indigo-700 dark:text-indigo-400 leading-relaxed text-left space-y-2 font-medium bg-white/50 dark:bg-slate-800/50 p-4 rounded-xl">
-                    <li><i class="fas fa-check-circle mr-2 text-indigo-500"></i> मोजणी करताना खूप मोठ्या झाडाखाली किंवा इमारतीजवळ थांबू नका.</li>
-                    <li><i class="fas fa-check-circle mr-2 text-indigo-500"></i> खूप ढगाळ किंवा पावसाळी वातावरणात GPS सिग्नल थोडा कमी असू शकतो.</li>
-                    <li><i class="fas fa-check-circle mr-2 text-indigo-500"></i> जर तुम्हाला शेतात न जाता मोजायचे असेल, तर 'मॅन्युअल (नकाशावर)' मोड निवडा आणि घरबसल्या बांधावर पॉईंट्स लावून अचूक मोजणी करा.</li>
+            <div class="bg-indigo-50 dark:bg-indigo-900/20 p-6 rounded-[1.5rem] border border-indigo-100 dark:border-indigo-800 mt-2 w-full">
+                <h3 class="font-black text-indigo-900 dark:text-indigo-300 text-lg mb-4 flex items-center gap-2"><i class="fas fa-lightbulb text-indigo-500 text-xl"></i> अचूकतेसाठी खास टिप्स</h3>
+                <ul class="text-sm text-indigo-700 dark:text-indigo-400 leading-relaxed space-y-3 font-medium">
+                    <li class="flex gap-3 items-start"><i class="fas fa-check-circle mt-1 text-indigo-500 shrink-0"></i> <span>मोजणी करताना खूप मोठ्या झाडाखाली किंवा इमारतीजवळ थांबू नका.</span></li>
+                    <li class="flex gap-3 items-start"><i class="fas fa-check-circle mt-1 text-indigo-500 shrink-0"></i> <span>खूप ढगाळ किंवा पावसाळी वातावरणात GPS सिग्नल थोडा कमी असू शकतो.</span></li>
+                    <li class="flex gap-3 items-start"><i class="fas fa-check-circle mt-1 text-indigo-500 shrink-0"></i> <span>जर तुम्हाला शेतात न जाता मोजायचे असेल, तर 'मॅन्युअल (नकाशावर मोजा)' मोड निवडा आणि घरबसल्या बांधावर पॉईंट्स लावून अचूक मोजणी करा.</span></li>
                 </ul>
             </div>
         </div>
     </div>
 
     <div id="aboutScreen" class="app-screen bg-slate-50 dark:bg-slate-900 pb-32">
-        <div class="bg-gradient-to-br from-slate-800 to-slate-900 px-6 pb-16 safe-pt text-center relative overflow-hidden shadow-lg rounded-b-[3rem] border-b-[6px] border-emerald-500">
+        <div class="w-full bg-gradient-to-b from-slate-800 to-slate-900 dark:from-slate-800 dark:to-black pt-[calc(env(safe-area-inset-top,24px)+2rem)] pb-28 px-6 text-center text-white rounded-b-[2.5rem] shadow-lg relative overflow-hidden">
             <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
-            <div class="w-28 h-28 mx-auto bg-gradient-to-tr from-emerald-400 to-teal-500 rounded-[2rem] flex items-center justify-center shadow-[0_15px_35px_rgba(16,185,129,0.5)] mb-6 transform rotate-6 relative z-10 border-4 border-white/20">
-                <i class="fas fa-leaf text-6xl text-white -rotate-6"></i>
+            <div class="w-24 h-24 mx-auto bg-gradient-to-tr from-emerald-400 to-teal-500 rounded-[1.5rem] flex items-center justify-center shadow-[0_10px_25px_rgba(16,185,129,0.4)] mb-4 transform rotate-6 relative z-10 border-2 border-white/20">
+                <i class="fas fa-leaf text-5xl text-white -rotate-6"></i>
             </div>
-            <h2 class="text-4xl font-black text-white relative z-10 tracking-wide mb-1">Krushi Yojana</h2>
-            <p class="text-emerald-400 font-bold text-xs tracking-widest uppercase mt-2 relative z-10 bg-emerald-400/10 border border-emerald-400/30 inline-block px-4 py-1.5 rounded-full shadow-sm">शेतकऱ्यांचा हक्काचा प्लॅटफॉर्म</p>
+            <h2 class="text-3xl font-black text-white relative z-10 tracking-wide mb-1">Krushi Yojana</h2>
+            <p class="text-emerald-400 font-bold text-xs tracking-widest uppercase relative z-10">शेतकऱ्यांचा हक्काचा प्लॅटफॉर्म</p>
         </div>
         
-        <div class="px-5 py-8 flex flex-col gap-6">
-            <div class="bg-white dark:bg-slate-800 rounded-[1.5rem] p-8 shadow-sm border border-slate-100 dark:border-slate-700 relative overflow-hidden">
-                <h3 class="font-black text-xl text-slate-800 dark:text-white mb-4 flex items-center gap-2">
-                    <i class="fas fa-bullseye text-emerald-500"></i> आमचे ध्येय
-                </h3>
+        <div class="px-5 -mt-16 relative z-20 flex flex-col gap-5 w-full">
+            <div class="bg-white dark:bg-slate-800 rounded-[1.5rem] p-6 shadow-md border border-slate-100 dark:border-slate-700 w-full">
+                <h3 class="font-black text-xl text-slate-800 dark:text-white mb-4 border-l-4 border-emerald-500 pl-3">आमचे ध्येय</h3>
                 <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed text-justify mb-3 font-medium">
-                    कृषियोजना (Krushiyojana.in) ची सुरुवात एका साध्या पण अत्यंत महत्त्वाच्या विचारातून झाली ती म्हणजे आपल्या बळीराजाला आधुनिक तंत्रज्ञानाची खऱ्या अर्थाने ताकद देणे होय. आम्ही शेतकऱ्यांचे कष्ट खूप जवळून पाहिले आहेत, त्यामुळे त्यांच्या रोजच्या समस्या सोडवण्यासाठी तंत्रज्ञानाचा एक भक्कम आधार निर्माण करणे हे आम्ही आमचे कर्तव्य मानतो.
+                    कृषियोजना (Krushiyojana.in) ची सुरुवात एका साध्या पण अत्यंत महत्त्वाच्या विचारातून झाली ते म्हणजे आपल्या बळीराजाला आधुनिक तंत्रज्ञानाची खऱ्या अर्थाने ताकद देणे होय. आम्ही शेतकऱ्यांचे कष्ट खूप जवळून पाहिले आहेत, त्यामुळे त्यांच्या रोजच्या समस्या सोडवण्यासाठी तंत्रज्ञानाचा एक भक्कम आधार निर्माण करणे हे आम्ही आमचे कर्तव्य मानतो.
                 </p>
                 <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed text-justify mb-3 font-medium">
                     आजच्या या वेगाने प्रगत होणाऱ्या डिजिटल युगात आपला शेतकरी कुठेही मागे राहू नये. त्याला त्याच्या हक्काच्या जमिनीचा अगदी अचूक आणि पारदर्शक अंदाज असावा. मोजणीसाठी सरकारी कार्यालयात माराव्या लागणाऱ्या चकरा, त्यात जाणारा अवाढव्य वेळ आणि पैसा यातून त्याची कायमची सुटका व्हावी, हाच हे <b>शेत जमीन मोजणी ॲप</b> तयार करण्यामागचा आमचा प्रामाणिक हेतू आहे.
@@ -324,39 +317,39 @@
                 </p>
             </div>
                 
-            <div class="bg-slate-100 dark:bg-slate-800/50 p-6 rounded-[1.5rem] border border-slate-200 dark:border-slate-700">
+            <div class="bg-slate-100 dark:bg-slate-800/50 p-6 rounded-[1.5rem] border border-slate-200 dark:border-slate-700 w-full">
                 <h4 class="font-black text-slate-800 dark:text-white text-base mb-5 text-center tracking-wide">ॲपची प्रमुख वैशिष्ट्ये</h4>
-                <div class="flex flex-col gap-4">
-                    <div class="bg-white dark:bg-slate-800 p-4 rounded-xl shadow-[0_4px_15px_rgba(0,0,0,0.03)] flex items-center gap-4">
+                <div class="flex flex-col gap-3">
+                    <div class="bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm flex items-center gap-4">
                         <div class="w-12 h-12 rounded-full bg-emerald-100 dark:bg-emerald-900/40 flex items-center justify-center text-emerald-600 dark:text-emerald-400 text-xl shrink-0"><i class="fas fa-shield-alt"></i></div>
-                        <span class="text-sm font-bold text-slate-700 dark:text-slate-300">कोणतीही फी नाही, १००% मोफत आणि सुरक्षित</span>
+                        <span class="text-sm font-bold text-slate-700 dark:text-slate-300 leading-snug">कोणतीही फी नाही, १००% मोफत आणि सुरक्षित</span>
                     </div>
-                    <div class="bg-white dark:bg-slate-800 p-4 rounded-xl shadow-[0_4px_15px_rgba(0,0,0,0.03)] flex items-center gap-4">
+                    <div class="bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm flex items-center gap-4">
                         <div class="w-12 h-12 rounded-full bg-emerald-100 dark:bg-emerald-900/40 flex items-center justify-center text-emerald-600 dark:text-emerald-400 text-xl shrink-0"><i class="fas fa-wifi"></i></div>
-                        <span class="text-sm font-bold text-slate-700 dark:text-slate-300">शेतात इंटरनेट नसतानाही सॅटेलाइट GPS ने काम करते</span>
+                        <span class="text-sm font-bold text-slate-700 dark:text-slate-300 leading-snug">शेतात इंटरनेट नसतानाही सॅटेलाइट GPS ने काम करते</span>
                     </div>
-                    <div class="bg-white dark:bg-slate-800 p-4 rounded-xl shadow-[0_4px_15px_rgba(0,0,0,0.03)] flex items-center gap-4">
+                    <div class="bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm flex items-center gap-4">
                         <div class="w-12 h-12 rounded-full bg-emerald-100 dark:bg-emerald-900/40 flex items-center justify-center text-emerald-600 dark:text-emerald-400 text-xl shrink-0"><i class="fas fa-file-contract"></i></div>
-                        <span class="text-sm font-bold text-slate-700 dark:text-slate-300">तुमच्या उताऱ्याप्रमाणे गुंठे, एकर आणि हेक्टरमध्ये अचूक निकाल</span>
+                        <span class="text-sm font-bold text-slate-700 dark:text-slate-300 leading-snug">तुमच्या सातबारा उताऱ्याप्रमाणे गुंठे, एकर आणि हेक्टरमध्ये अचूक निकाल</span>
                     </div>
                 </div>
             </div>
 
-            <div class="bg-white dark:bg-slate-800 rounded-[1.5rem] p-6 shadow-sm border border-slate-100 dark:border-slate-700 flex items-center gap-5">
+            <div class="bg-white dark:bg-slate-800 rounded-[1.5rem] p-5 shadow-md border border-slate-100 dark:border-slate-700 flex items-center gap-5 w-full">
                 <div class="w-16 h-16 bg-slate-100 dark:bg-slate-700 rounded-full flex items-center justify-center text-slate-400 dark:text-slate-400 text-2xl shrink-0 border-2 border-white dark:border-slate-600 shadow-inner">
                     <i class="fas fa-user-tie"></i>
                 </div>
-                <div>
+                <div class="flex-1">
                     <p class="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold uppercase tracking-widest mb-1">Design & Developed by</p>
                     <h3 class="font-black text-slate-800 dark:text-white text-xl">Sagar D Patil</h3>
-                    <a href="mailto:sagardhoran@outlook.com" class="text-xs text-blue-500 font-medium mt-1 inline-block"><i class="fas fa-envelope mr-1"></i> संपर्क करा</a>
+                    <a href="mailto:sagardhoran@outlook.com" class="text-xs text-blue-500 font-medium mt-1 inline-flex items-center gap-1"><i class="fas fa-envelope"></i> संपर्क करा</a>
                 </div>
             </div>
 
-            <button onclick="window.open('https://krushiyojana.in', '_blank')" class="w-full bg-slate-900 dark:bg-emerald-600 text-white font-black text-lg py-5 mt-2 rounded-[1.25rem] shadow-[0_10px_20px_rgba(0,0,0,0.15)] active:scale-95 transition-transform flex items-center justify-center gap-3">
+            <button onclick="window.open('https://krushiyojana.in', '_blank')" class="w-full bg-slate-900 dark:bg-emerald-600 text-white font-black text-lg py-4 mt-2 rounded-[1.25rem] shadow-[0_10px_20px_rgba(0,0,0,0.15)] active:scale-95 transition-transform flex items-center justify-center gap-3">
                 <i class="fas fa-globe text-xl"></i>आमच्या वेबसाईटला भेट द्या
             </button>
-            <p class="text-center text-slate-400 dark:text-slate-500 text-xs mt-2 font-medium tracking-wide">Version 2.0 | Proudly Made With ❤️ in Maharashtra</p>
+            <p class="text-center text-slate-400 dark:text-slate-500 text-xs mt-1 font-medium tracking-wide pb-4">Version 2.0 | Proudly Made With ❤️ in Maharashtra</p>
         </div>
     </div>
 
@@ -391,7 +384,7 @@
             <div class="w-12 h-1.5 bg-gray-300 dark:bg-slate-600 rounded-full mx-auto mb-6"></div>
             <i class="fas fa-calculator text-5xl text-emerald-500 animate-pulse mb-5"></i>
             <h3 class="text-2xl font-black text-slate-800 dark:text-white">क्षेत्रफळ काढत आहे...</h3>
-            <p id="countdownTimer" class="text-slate-500 dark:text-slate-400 font-bold mt-2">कृपया थांबा...</p>
+            <p id="countdownTimer" class="text-slate-500 dark:text-slate-400 font-bold mt-2">कृपया प्रतीक्षा करा...</p>
         </div>
     </div>
 
@@ -413,46 +406,52 @@
 
     <div id="resultDashboard" class="bottom-sheet bg-white dark:bg-slate-800 flex flex-col border border-slate-100 dark:border-slate-700/50">
         <div class="sticky top-0 bg-white dark:bg-slate-800 z-10 pt-6 pb-4 px-6 flex justify-between items-center border-b border-slate-100 dark:border-slate-700">
-            <h2 class="text-xl font-black text-slate-800 dark:text-white">तुमचा निकाल</h2>
+            <h2 class="text-xl font-black text-slate-800 dark:text-white">तुमचा मोजणी अहवाल</h2>
             <button onclick="resetMeasurement()" class="bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 w-9 h-9 rounded-full flex items-center justify-center font-bold active:scale-90 transition-transform">
                 <i class="fas fa-times"></i>
             </button>
         </div>
         
         <div class="p-6 overflow-y-auto">
-            <div class="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-[1.5rem] p-6 text-center shadow-[0_10px_25px_rgba(16,185,129,0.3)] text-white mb-5 relative overflow-hidden">
+            <div class="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-[1.5rem] p-6 text-center shadow-[0_15px_30px_rgba(16,185,129,0.4)] border border-emerald-400/50 text-white mb-6 relative overflow-hidden">
                 <i class="fas fa-check-circle absolute -right-4 -bottom-4 text-8xl opacity-10"></i>
-                <p class="font-bold text-emerald-100 text-sm mb-1 uppercase tracking-widest">एकूण क्षेत्रफळ</p>
-                <h3 class="text-6xl font-black drop-shadow-md"><span id="resGuntha">0.00</span></h3>
-                <p class="font-bold mt-1 text-lg">गुंठे</p>
+                <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-black/10 to-transparent"></div>
+                <p class="font-bold text-emerald-100 text-sm mb-1 uppercase tracking-widest relative z-10">एकूण क्षेत्रफळ</p>
+                <h3 class="text-6xl font-black drop-shadow-[0_4px_4px_rgba(0,0,0,0.2)] relative z-10"><span id="resGuntha">0.00</span></h3>
+                <p class="font-bold mt-1 text-lg relative z-10">गुंठे</p>
             </div>
 
             <div class="grid grid-cols-2 gap-4 mb-5">
-                <div class="bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-[1.25rem] p-4 text-center">
-                    <p class="text-[11px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider mb-1">एकर (Acre)</p>
-                    <h3 class="text-2xl font-black text-slate-800 dark:text-white" id="resAcre">0.00</h3>
+                <div class="bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-[1.25rem] p-4 text-center relative overflow-hidden shadow-sm">
+                    <i class="fas fa-chart-area absolute -right-2 -bottom-2 text-5xl text-slate-200 dark:text-slate-600 opacity-50"></i>
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider mb-1 relative z-10">एकर (Acre)</p>
+                    <h3 class="text-2xl font-black text-slate-800 dark:text-white relative z-10" id="resAcre">0.00</h3>
                 </div>
-                <div class="bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-[1.25rem] p-4 text-center">
-                    <p class="text-[11px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider mb-1">हेक्टर (Hectare)</p>
-                    <h3 class="text-2xl font-black text-slate-800 dark:text-white" id="resHectare">0.00</h3>
+                <div class="bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-[1.25rem] p-4 text-center relative overflow-hidden shadow-sm">
+                    <i class="fas fa-vector-square absolute -right-2 -bottom-2 text-5xl text-slate-200 dark:text-slate-600 opacity-50"></i>
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider mb-1 relative z-10">हेक्टर (Hectare)</p>
+                    <h3 class="text-2xl font-black text-slate-800 dark:text-white relative z-10" id="resHectare">0.00</h3>
                 </div>
             </div>
 
-            <div class="bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-100 dark:border-indigo-800 rounded-[1.25rem] p-4 text-center mb-6">
-                <p class="text-sm font-bold text-indigo-600 dark:text-indigo-400 mb-1"><i class="fas fa-route"></i> बांधाची एकूण लांबी</p>
-                <h3 class="text-3xl font-black text-indigo-800 dark:text-indigo-200"><span id="resPerimeter">0.00</span> <span class="text-base font-bold">मीटर</span></h3>
+            <div class="bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-100 dark:border-indigo-800 rounded-[1.25rem] p-4 text-center mb-6 flex items-center justify-between px-6 shadow-sm">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-indigo-100 dark:bg-indigo-800/50 rounded-full flex items-center justify-center text-indigo-500 dark:text-indigo-400"><i class="fas fa-route"></i></div>
+                    <p class="text-sm font-bold text-indigo-700 dark:text-indigo-300">सर्व बांधांची एकूण लांबी</p>
+                </div>
+                <h3 class="text-2xl font-black text-indigo-800 dark:text-indigo-200"><span id="resPerimeter">0.00</span> <span class="text-sm font-bold opacity-80">मी.</span></h3>
             </div>
 
             <div class="flex flex-col gap-3 mt-4">
                 <div class="flex gap-3">
-                    <button onclick="openDownloadModal()" class="flex-[1] bg-blue-600 text-white font-bold py-4 rounded-xl shadow-lg active:scale-95 transition-transform flex items-center justify-center gap-2">
+                    <button onclick="openDownloadModal()" class="flex-[1] bg-blue-600 text-white font-bold py-4 rounded-xl shadow-[0_8px_20px_rgba(37,99,235,0.3)] active:scale-95 transition-transform flex items-center justify-center gap-2">
                         <i class="fas fa-image text-xl"></i> इमेज
                     </button>
-                    <button onclick="shareResultOnWhatsApp()" class="flex-[2] bg-[#25D366] text-white font-bold py-4 rounded-xl shadow-lg active:scale-95 transition-transform flex items-center justify-center gap-2">
-                        <i class="fab fa-whatsapp text-xl"></i> शेअर
+                    <button onclick="shareResultOnWhatsApp()" class="flex-[2] bg-[#25D366] text-white font-bold py-4 rounded-xl shadow-[0_8px_20px_rgba(37,211,102,0.3)] active:scale-95 transition-transform flex items-center justify-center gap-2">
+                        <i class="fab fa-whatsapp text-xl"></i> शेअर करा
                     </button>
                 </div>
-                <button onclick="resetMeasurement()" class="w-full bg-slate-800 dark:bg-slate-700 text-white font-bold py-4 rounded-xl shadow-lg active:scale-95 transition-transform flex items-center justify-center gap-2">
+                <button onclick="resetMeasurement()" class="w-full bg-slate-800 dark:bg-slate-700 text-white font-bold py-4 rounded-xl shadow-lg active:scale-95 transition-transform flex items-center justify-center gap-2 mt-2">
                     <i class="fas fa-undo"></i> पुन्हा मोजा
                 </button>
             </div>
@@ -463,7 +462,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@turf/turf@6/turf.min.js"></script>
 
     <script>
-        // Theme Toggle Logic
         function toggleTheme() {
             const html = document.documentElement;
             const icon = document.getElementById('themeIcon');
@@ -494,6 +492,7 @@
         document.addEventListener("DOMContentLoaded", () => {
             setTimeout(() => {
                 splashScreen.style.opacity = '0';
+                splashScreen.style.transform = 'scale(1.1)'; 
                 setTimeout(() => { 
                     splashScreen.style.display = 'none'; 
                     if (localStorage.getItem('hasSeenOnboarding') === 'true') {
@@ -502,8 +501,8 @@
                     } else {
                         onboardingScreen.classList.remove('hidden');
                     }
-                }, 700);
-            }, 4000); 
+                }, 1000);
+            }, 5000); 
         });
 
         function updateSlider() {
@@ -536,11 +535,23 @@
             setTimeout(() => { onboardingScreen.style.display = 'none'; initGPSChecks(); }, 500);
         }
 
+        // 🔥 FIXED Theme Button Hide Logic
         function switchTab(screenId, element) {
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.app-screen').forEach(el => el.classList.remove('active'));
             element.classList.add('active');
             document.getElementById(screenId).classList.add('active');
+            
+            const themeBtn = document.getElementById('themeToggleBtn');
+            const resultSheet = document.getElementById('resultDashboard');
+            if (themeBtn) {
+                if (screenId === 'mapScreen' && !resultSheet.classList.contains('show')) { 
+                    themeBtn.style.display = 'flex'; 
+                } else { 
+                    themeBtn.style.display = 'none'; 
+                }
+            }
+
             if (screenId === 'mapScreen' && map) { setTimeout(() => { map.invalidateSize(); }, 100); }
         }
 
@@ -554,10 +565,12 @@
               startBtn = document.getElementById('startBtn'), stopBtn = document.getElementById('stopBtn'), fixCornerBtn = document.getElementById('fixCornerBtn'),
               gpsStatus = document.getElementById('gpsStatus'), accuracyMeter = document.getElementById('accuracyMeter'), resultDashboard = document.getElementById('resultDashboard');
         const activeMeasureBtns = document.getElementById('activeMeasureBtns');
+        const undoBtn = document.getElementById('undoBtn');
+        const calcBtn = document.getElementById('calcBtn');
 
         function initGPSChecks() {
             mapOverlay.classList.add('hidden');
-            gpsStatus.innerHTML = `<i class="fas fa-spinner fa-spin text-emerald-500"></i> <span class="text-slate-700 dark:text-slate-200">अचूक लोकेशन तपासत आहे...</span>`;
+            gpsStatus.innerHTML = `<i class="fas fa-spinner fa-spin text-emerald-500"></i> <span class="text-slate-700 dark:text-slate-200">अचूक लोकेशन शोधत आहे...</span>`;
 
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
@@ -609,6 +622,10 @@
                 gpsControls.classList.add('hidden'); manualControls.classList.remove('hidden');
                 gpsStatus.innerHTML = `<i class="fas fa-hand-pointer text-emerald-500"></i> <span class="text-emerald-600 dark:text-emerald-400">मॅन्युअल मोड चालू</span>`;
                 
+                // Hide undo initially
+                undoBtn.classList.replace('flex', 'hidden');
+                calcBtn.classList.replace('w-[70%]', 'w-full');
+
                 if(mapOverlay) mapOverlay.classList.add('hidden');
                 if(!map) initMap(19.7515, 75.7139, 6);
                 if(map) map.dragging.enable();
@@ -625,6 +642,12 @@
             if(!isManualMode) return;
             L.marker(e.latlng, { icon: L.divIcon({ className: 'manual-pin', html: `<div class="w-4 h-4 bg-orange-500 border-2 border-white rounded-full shadow-md"></div>`, iconSize: [16, 16], iconAnchor: [8, 8] }) }).addTo(manualMarkersLayer);
             coordinates.push([e.latlng.lat, e.latlng.lng]); polyline.addLatLng(e.latlng); updateLiveDistanceUI();
+            
+            // 🔥 FIXED Manual Undo Logic (Show only when pin exists)
+            if(coordinates.length > 0) {
+                undoBtn.classList.replace('hidden', 'flex');
+                calcBtn.classList.replace('w-full', 'w-[70%]');
+            }
         }
 
         function undoManualPin() {
@@ -636,6 +659,12 @@
             });
             if(polygon) map.removeLayer(polygon);
             resultDashboard.classList.remove('show'); updateLiveDistanceUI();
+
+            // 🔥 Hide Undo if empty
+            if(coordinates.length === 0) {
+                undoBtn.classList.replace('flex', 'hidden');
+                calcBtn.classList.replace('w-[70%]', 'w-full');
+            }
         }
 
         function showCalculatingPopup(callback) {
@@ -690,7 +719,7 @@
                     startBtn.disabled = false; startBtn.innerHTML = `<i class="fas fa-play"></i> मोजणी सुरू करा`;
                     startBtn.className = "w-full bg-emerald-600 text-white font-black py-4 rounded-[1.25rem] shadow-md text-base flex justify-center items-center gap-2 h-14 active:scale-95 transition-transform";
                 } else {
-                    startBtn.disabled = true; startBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> अचूकतेची वाट पाहत आहे (${accuracy}m)`;
+                    startBtn.disabled = true; startBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> GPS अचूकतेची वाट पाहत आहे (${accuracy}m)`;
                     startBtn.className = "w-full bg-slate-300 dark:bg-slate-700 text-slate-500 dark:text-slate-400 font-black py-4 rounded-[1.25rem] shadow-md text-base flex justify-center items-center gap-2 opacity-80 h-14";
                 }
             }
@@ -718,7 +747,7 @@
                     coordinates.push([avgLat, avgLng]); polyline.addLatLng([avgLat, avgLng]);
                     L.circleMarker([avgLat, avgLng], {radius: 6, color: 'orange', weight: 2, fillColor: 'yellow', fillOpacity: 1}).addTo(map);
                 }
-                isAveraging = false; fixCornerBtn.disabled = false; fixCornerBtn.innerHTML = `<i class="fas fa-crosshairs text-lg"></i> कोपरा`; updateLiveDistanceUI();
+                isAveraging = false; fixCornerBtn.disabled = false; fixCornerBtn.innerHTML = `<i class="fas fa-crosshairs text-lg"></i> कोपरा फिक्स करा`; updateLiveDistanceUI();
             }, 3000); 
         }
 
@@ -746,6 +775,10 @@
             document.getElementById('liveDistanceOverlay').classList.add('hidden');
             showCalculatingPopup(() => {
                 calculateArea();
+                // Hide theme button when result shown
+                const themeBtn = document.getElementById('themeToggleBtn');
+                if (themeBtn) themeBtn.style.display = 'none';
+
                 if (window.Capacitor && window.Capacitor.Plugins.AdMob) {
                     try { window.Capacitor.Plugins.AdMob.showInterstitial().catch(e => console.log(e)); } catch(err) {}
                 }
@@ -758,7 +791,15 @@
             if(!isManualMode) { 
                 startBtn.classList.remove('hidden'); 
                 activeMeasureBtns.classList.add('hidden'); activeMeasureBtns.style.display = 'none'; 
+            } else {
+                undoBtn.classList.replace('flex', 'hidden');
+                calcBtn.classList.replace('w-[70%]', 'w-full');
             }
+            
+            // Show theme button again
+            const themeBtn = document.getElementById('themeToggleBtn');
+            const activeTab = document.querySelector('.nav-item.active').querySelector('span').innerText;
+            if (themeBtn && activeTab === 'मोजणी') themeBtn.style.display = 'flex';
         }
 
         function resetMeasurement() { resetMeasurementUI(); }
@@ -785,33 +826,28 @@
 
                 if(polygon) map.removeLayer(polygon);
                 polygon = L.polygon(bestPolygon.geometry.coordinates[0].map(c => [c[1], c[0]]), {color: '#10b981', weight: 4, fillColor: '#34d399', fillOpacity: 0.5}).addTo(map);
+                
+                // Hide theme button when result shown
+                const themeBtn = document.getElementById('themeToggleBtn');
+                if (themeBtn) themeBtn.style.display = 'none';
+
                 map.fitBounds(polygon.getBounds(), {paddingBottomRight: [0, window.innerHeight * 0.4], animate: true}); polyline.setLatLngs([]); 
                 resultDashboard.classList.add('show');
             } catch (e) { alert("क्षेत्रफळ काढताना अडचण आली. मार्ग एकमेकांना छेदला असेल. कृपया पुन्हा मोजा."); }
         }
 
-        // ==========================================
-        // 3. IMAGE DOWNLOAD LOGIC
-        // ==========================================
-        function openDownloadModal() {
-            document.getElementById('downloadModal').classList.remove('hidden');
-        }
-        
-        function closeDownloadModal() {
-            document.getElementById('downloadModal').classList.add('hidden');
-        }
+        function openDownloadModal() { document.getElementById('downloadModal').classList.remove('hidden'); }
+        function closeDownloadModal() { document.getElementById('downloadModal').classList.add('hidden'); }
 
         async function generateMapImage() {
             const name = document.getElementById('farmerName').value || 'शेतकरी';
             const village = document.getElementById('villageName').value || '-';
             const gat = document.getElementById('gatNo').value || '-';
 
-            // Marathi Date and Time
             const now = new Date();
             const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
             const dateTimeStr = now.toLocaleDateString('mr-IN', options);
 
-            // Set data in Web-style HD container
             document.getElementById('dlName').innerText = `नाव: ${name}`;
             document.getElementById('dlVillage').innerText = `गाव: ${village} | गट नं: ${gat}`;
             document.getElementById('dlArea').innerText = finalAreaGuntha.toFixed(2);
@@ -825,22 +861,18 @@
             const originalMapParent = document.getElementById('mapScreen');
             const mapDiv = document.getElementById('map');
             
-            // Show container (off-screen)
             container.style.display = 'flex';
-            
-            // Temporary move map
             mapArea.appendChild(mapDiv);
             map.invalidateSize();
+            
+            // 🔥 FIXED Auto Center for Download Map
+            if(polygon) { map.fitBounds(polygon.getBounds(), {padding: [50, 50], animate: false}); }
 
             setTimeout(async () => {
                 try {
                     const canvas = await html2canvas(container, {
-                        useCORS: true, 
-                        allowTaint: false, 
-                        scale: 2, 
-                        backgroundColor: '#ffffff',
-                        windowWidth: 800,
-                        windowHeight: 1100
+                        useCORS: true, allowTaint: false, scale: 2, backgroundColor: '#ffffff',
+                        windowWidth: 800, windowHeight: 1100
                     });
                     
                     const base64Image = canvas.toDataURL('image/jpeg', 0.9);
@@ -848,51 +880,51 @@
                     
                     if (window.Capacitor && window.Capacitor.Plugins.Filesystem) {
                         const { Filesystem, Directory } = window.Capacitor.Plugins;
-                        try { await Filesystem.requestPermissions(); } catch(e) {}
-
-                        await Filesystem.writeFile({
-                            path: filename,
-                            data: base64Image,
-                            directory: Directory.Documents,
-                            recursive: true
-                        });
-                        alert("✅ तुमच्या मोबाईलच्या 'Documents' फोल्डरमध्ये इमेज सेव्ह झाली आहे!");
+                        try { 
+                            let permStatus = await Filesystem.checkPermissions();
+                            if (permStatus.publicStorage !== 'granted') {
+                                permStatus = await Filesystem.requestPermissions();
+                            }
+                            
+                            if (permStatus.publicStorage === 'granted' || permStatus.publicStorage === 'prompt') {
+                                await Filesystem.writeFile({
+                                    path: filename, data: base64Image, directory: Directory.Documents, recursive: true
+                                });
+                                alert("✅ तुमच्या मोबाईलच्या 'Documents' फोल्डरमध्ये इमेज सेव्ह झाली आहे!");
+                            } else {
+                                alert("⚠️ इमेज सेव्ह करण्यासाठी Storage ची परवानगी आवश्यक आहे. कृपया Settings मध्ये जाऊन परवानगी द्या.");
+                            }
+                        } catch(e) { 
+                            await Filesystem.writeFile({
+                                path: filename, data: base64Image, directory: Directory.Documents, recursive: true
+                            });
+                            alert("✅ तुमच्या मोबाईलच्या 'Documents' फोल्डरमध्ये इमेज सेव्ह झाली आहे!");
+                        }
                     } else {
-                        let a = document.createElement('a');
-                        a.href = base64Image;
-                        a.download = filename;
-                        a.click();
+                        let a = document.createElement('a'); a.href = base64Image; a.download = filename; a.click();
                         alert("✅ इमेज डाऊनलोड झाली आहे!");
                     }
                 } catch(e) {
-                    console.error(e);
-                    alert("इमेज सेव्ह करताना त्रुटी आली.");
+                    console.error(e); alert("इमेज सेव्ह करताना त्रुटी आली.");
                 } finally {
-                    // Restore original UI
                     originalMapParent.insertBefore(mapDiv, originalMapParent.firstChild);
                     container.style.display = 'none';
                     map.invalidateSize();
                     resultDashboard.classList.add('show');
                 }
-            }, 1000); // 1 sec delay to ensure map renders perfectly
+            }, 1000); 
         }
 
-        // ==========================================
-        // 4. WHATSAPP SHARE LOGIC
-        // ==========================================
         function shareResultOnWhatsApp() {
             const text = `🚜 *माझ्या शेताची अचूक मोजणी* 🚜\n\n📍 *एकूण क्षेत्रफळ:* ${finalAreaGuntha.toFixed(2)} गुंठे\n\nमी हे शेत जमीन मोजणी ॲप वापरून मोजणी केली आहे!\n\n👇 *तुम्हीही ॲप डाऊनलोड करा:*\nhttps://www.krushiyojana.in/app/mojani`;
             window.location.href = `https://wa.me/?text=${encodeURIComponent(text)}`;
         }
 
         function shareApp() {
-            const text = "🚜 घरबसल्या स्वतःच्या मोबाईलवर शेतीची अचूक मोजणी करा. कृषियोजनाचे हे मोफत ॲप वापरून पहा!\n\n👇 *येथून डाऊनलोड करा:*\nhttps://www.krushiyojana.in/app/mojani";
+            const text = "🚜 घरबसल्या स्वतःच्या मोबाईलवर तुमच्या शेतीची अचूक मोजणी करा. कृषियोजनाचे हे मोफत ॲप वापरून पहा!\n\n👇 *येथून डाऊनलोड करा:*\nhttps://www.krushiyojana.in/app/mojani";
             window.location.href = `https://wa.me/?text=${encodeURIComponent(text)}`;
         }
 
-        // ==========================================
-        // 5. ADMOB SAFE INTEGRATION
-        // ==========================================
         window.addEventListener('load', async () => {
             try {
                 if (window.Capacitor && window.Capacitor.Plugins.AdMob) {

@@ -1,11 +1,19 @@
 {
+
   "appId": "com.krushiyojana.mojani",
+
   "appName": "Shet Mojani",
+
   "webDir": "www",
+
   "bundledWebRuntime": false,
-  "plugins": {
-    "SplashScreen": {
-      "launchShowDuration": 0
-    }
+
+  "server": {
+
+    "url": "https://krushiyojana.in/mojani/v1/",
+
+    "cleartext": true
+
   }
+
 }
